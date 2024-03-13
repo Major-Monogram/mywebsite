@@ -73,3 +73,22 @@
   margin-top: 20px; /* Adjust margin as needed */
   text-align: left; /* Left-align the subheading */
 }
+
+.logos {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.logos a {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.logos img {
+  width: 50px;
+  height: auto;
+}
+.logos a:hover {
+  background-color: #1a9d86; /* Change background color on hover */
+}
