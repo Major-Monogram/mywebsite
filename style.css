@@ -92,3 +92,16 @@
 .logos a:hover {
   background-color: #1a9d86; /* Change background color on hover */
 }
+#network-lines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0; /* Behind everything */
+}
+
+.interest {
+  /* existing styles */
+  font-family: monospace;
+  font-size: 14px;
+}
