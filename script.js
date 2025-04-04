@@ -1,34 +1,40 @@
+// ======= Dynamic Heading Changing Word =======
+
 var changingWord = document.getElementById('changing-word'); // Select the changing word span
 
-// Words to be randomly displayed
+// Words to be randomly displayed in the heading
 var words = ["Unique", "Diffident", "Student", "KVian!", "Chess Player", "Yours", "Learning", "Researcher", "Coder", "Programmer", "Blogger", "Chef"];
 
-// Function to choose a random word
+// Function to choose a random word for the heading
 function getRandomWord() {
   return words[Math.floor(Math.random() * words.length)];
 }
 
-// Function to update the changing word
+// Function to update the changing word in the heading
 function updateWord() {
   changingWord.textContent = getRandomWord();
 }
 
-// Function to set interval for changing words every 0.2 seconds for 5 seconds
+// Function to set interval for changing words every 150ms for 5 seconds
 function changeWordsForFiveSeconds() {
-  var intervalId = setInterval(updateWord, 150); // Change word every 0.2 seconds
+  var intervalId = setInterval(updateWord, 150);
   setTimeout(function() {
-    clearInterval(intervalId); // Stop changing words after 5 seconds
-    changingWord.textContent = "Adyut Singh"
+    clearInterval(intervalId);
+    changingWord.textContent = "Adyut Singh";
     setTimeout(function() {
-      changingWord.textContent = "Adyut Singh"; // Set the word to "Adyut Singh" for 10 seconds
-      setTimeout(changeWordsForFiveSeconds, 10000); // Restart the process after 10 seconds
+      changingWord.textContent = "Adyut Singh";
+      setTimeout(changeWordsForFiveSeconds, 10000);
     }, 10000);
   }, 5000);
 }
 
-// Call changeWordsForFiveSeconds function to start the process
+// Start the dynamic heading process
 changeWordsForFiveSeconds();
 
+
+// ======= Animated Interests with No Duplicates =======
+
+// List of all interests (will be randomly shown)
 var interests = [
   "Computers", "Family & Friends", "Music", "Coding", "AI", "Tech", "Electronics", "Discord", "Leadership",
   "Cooking", "Science", "Research", "Positivity", "Self-Improvement Books", "Short Films", "Stalker Series",
@@ -39,33 +45,114 @@ var interests = [
   "YOU!"
 ];
 
+// Keep track of interests currently visible on the screen
+let activeInterests = new Set();
+
+// Get a random interest that is not already displayed
 function getRandomInterest() {
-  return interests[Math.floor(Math.random() * interests.length)];
+  let available = interests.filter(i => !activeInterests.has(i));
+  if (available.length === 0) return null;
+  return available[Math.floor(Math.random() * available.length)];
 }
 
+// Create an interest element on screen
 function createInterest() {
-  var interest = document.createElement('span');
-  interest.textContent = getRandomInterest();
+  let interestText = getRandomInterest();
+  if (!interestText) return; // if all interests are active, do nothing
+
+  let interest = document.createElement('span');
+  interest.textContent = interestText;
   interest.classList.add('interest');
   document.querySelector('.animated-interests').appendChild(interest);
-  
+
+  // Mark this interest as active
+  activeInterests.add(interestText);
+
   // Set random position
-  interest.style.left = Math.random() * (window.innerWidth - interest.offsetWidth) + 'px';
+  interest.style.left = Math.random() * (window.innerWidth - 100) + 'px';
   interest.style.top = Math.random() * (window.innerHeight - 80) + 'px';
-  
-  // Fade in animation
+
+  // Fade in animation with a random delay
   setTimeout(function() {
     interest.classList.add('fade-in');
-  }, Math.random() * 3000); // Random delay between 0 and 3 seconds
-  
-  // Fade out and remove after 5-7 seconds
+  }, Math.random() * 3000);
+
+  // Fade out and remove the element after 5-7 seconds
   setTimeout(function() {
     interest.classList.add('fade-out');
     setTimeout(function() {
       interest.remove();
-    }, 1000); // Fade-out duration is 1 second
-  }, 5000 + Math.random() * 2000); // Random duration between 5 and 7 seconds
+      activeInterests.delete(interestText);
+    }, 1000); // fade-out duration
+  }, 5000 + Math.random() * 2000);
 }
 
-// Repeat createInterest every 1-3 seconds
+// Create interests repeatedly (every 1-3 seconds)
 setInterval(createInterest, Math.random() * 2000 + 1000);
+
+
+// ======= Canvas for Connecting Lines (Neural Network Effect) =======
+
+// Add canvas element from HTML
+const canvas = document.getElementById('network-lines');
+const ctx = canvas.getContext('2d');
+
+// Function to update canvas size based on window dimensions
+function updateCanvasSize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+updateCanvasSize();
+window.addEventListener('resize', updateCanvasSize);
+
+// Function to draw connecting lines between all current interest elements
+function drawLines() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  let elements = Array.from(document.querySelectorAll('.interest'));
+
+  // Draw line between every pair of elements
+  for (let i = 0; i < elements.length; i++) {
+    let aRect = elements[i].getBoundingClientRect();
+    for (let j = i + 1; j < elements.length; j++) {
+      let bRect = elements[j].getBoundingClientRect();
+      ctx.beginPath();
+      ctx.moveTo(aRect.left + aRect.width / 2, aRect.top + aRect.height / 2);
+      ctx.lineTo(bRect.left + bRect.width / 2, bRect.top + bRect.height / 2);
+      ctx.strokeStyle = 'rgba(34, 233, 168, 0.3)'; // thin cyan line
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+  requestAnimationFrame(drawLines);
+}
+requestAnimationFrame(drawLines);
+
+
+// ======= Click to Create Temporary Point with Connections =======
+
+document.addEventListener('click', function(e) {
+  // Create a temporary node at the click position
+  let tempNode = document.createElement('span');
+  tempNode.className = 'interest';
+  tempNode.style.left = `${e.clientX}px`;
+  tempNode.style.top = `${e.clientY}px`;
+  tempNode.style.width = '5px';
+  tempNode.style.height = '5px';
+  tempNode.style.backgroundColor = '#22e9a8';
+  tempNode.style.borderRadius = '50%';
+  tempNode.style.position = 'absolute';
+  tempNode.style.pointerEvents = 'none';
+
+  document.querySelector('.animated-interests').appendChild(tempNode);
+
+  // Fade in the temporary node
+  tempNode.classList.add('fade-in');
+
+  // After 4 seconds, fade out and remove the temporary node
+  setTimeout(() => {
+    tempNode.classList.add('fade-out');
+    setTimeout(() => {
+      tempNode.remove();
+    }, 1000);
+  }, 4000);
+});
